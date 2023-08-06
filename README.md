@@ -16,7 +16,7 @@ The goal of this project is to understand the relative importance of various soc
 * Identity
 * Personality
 
-**As the project was initially conducted in python, and then finished in R, it is advised to read the "AHP.ipynb" file first, then read "IBM_AHP.Rmd file." to understand the researcher's intend**
+**As the project was initially conducted in python, and then finished in R, it is advised to read the "AHP.ipynb" file first, then read "IBM_AHP.Rmd file." to understand the researcher's intentions.**
 
 ## Python Implementation
 The initial plan was to implement the AHP in Python. The code is included in the repository. However, an issue was encountered with the Python AHP package, which prevented us from successfully conducting the analysis in Python. Details regarding this issue can be found in the Python code comments. 

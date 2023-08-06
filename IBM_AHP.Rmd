@@ -1,0 +1,201 @@
+---
+title: "AHP"
+author: "Yuqi Lou"
+date: "21/07/2023"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Understanding User Preferences for social characteristics Features in IBM SkillsBuild Chatbot: Analysis using the Analytic Hierarchy Process (AHP)
+
+```{r}
+library(ahpsurvey)
+library(magrittr)
+library(pheatmap)
+
+atts = c(
+    'Proactivity', 'Conscientiousness', 'Damage control',
+    'Thoroughness', 'Emotional intelligence', 'Identity',
+    'Personality'
+)
+
+df = read.csv('C:/Users/louyu/D_AHP/extents.csv')
+user_profiles = read.csv('C:/Users/louyu/D_AHP/user_profiles.csv')
+```
+
+```{r}
+# AHP on every single row
+
+data_ahp = df %>%
+    ahp.mat(atts = atts, reciprocal = TRUE) # Converting negative numbers to reciprocal
+
+eigentrue = ahp.indpref(data_ahp, atts, method = "eigen")
+
+# Compute pairwise comparison matrices
+data_matrix <- as.matrix(eigentrue)
+
+pheatmap(data_matrix, 
+         cluster_rows = FALSE,   # Set to TRUE if you want to cluster rows
+         cluster_cols = TRUE,   # Set to TRUE if you want to cluster columns
+         color = colorRampPalette(c("white", "black"))(100),
+         main = "Overall preference of the Social Charateristic Features")
+# Create the box plot
+par(mar = c(10, 5, 4, 2) + 0.1)
+boxplot(data_matrix, 
+        main = "Overall preference of the Social Charateristic Features",
+        ylab = "Values",
+        las = 2)
+```
+
+```{r}
+split_dataframe_by_column <- function(data_frame, user_prof, column_name) {
+  # Get unique values of the specified column
+  unique_values <- unique(user_prof[[column_name]])
+  
+  # Create an empty list to store the subsets
+  dataframes_list <- list()
+  
+  # Split the data frame by the specified column and store subsets in the list
+  for (value in unique_values) {
+    indices = which(user_prof[[column_name]] == value)
+    subset_df = data_frame[indices, ]
+    dataframes_list[[as.character(value)]] <- subset_df
+  }
+  
+  return(dataframes_list)
+}
+plot_heat_map = function(data_frame, user_profiles, column_name, column_full_name) {
+  df_list = split_dataframe_by_column(data_frame, user_profiles, column_name)
+  column_names = names(df_list)
+  agg_ahps = c()
+  
+  for (value in column_names) {
+    ahp_value = df_list[[value]] %>%
+      ahp.mat(atts = atts, reciprocal = TRUE)
+    
+    eigentrue = ahp.indpref(ahp_value, atts, method = "eigen")
+    agg = ahp.aggpref(ahp_value, atts, method = "eigen")
+    
+    data_matrix <- as.matrix(eigentrue)
+    agg_ahps = rbind(agg_ahps, agg)
+    
+    if (nrow(eigentrue) == 1 & all(eigentrue[1, ] == eigentrue[1, 1])) {
+      cat(paste("WARNING: there is only one rows of", value, "in", 
+                  column_full_name, 
+                  "\nand all columns have the same value.",
+                  "\nThe heatmap is omitted due to R will output error in this case.",
+                  "\nBut this row will show up in the", 
+                  paste("\nPreferred Social Charateristic Features of different", column_full_name)))
+      next
+    }
+    
+    full_name_with_brakets = paste0("(", column_full_name, ")")
+    pheatmap(data_matrix, 
+             cluster_rows = FALSE,   # Set to TRUE if you want to cluster rows
+             cluster_cols = FALSE,   # Set to TRUE if you want to cluster columns
+             color = colorRampPalette(c("white", "black"))(100),
+             main = paste("Preferred Social Charateristic Features of different", value, full_name_with_brakets))
+    
+  }
+  
+  rownames(agg_ahps) <- column_names
+  data_matrix <- as.matrix(agg_ahps)
+  pheatmap(data_matrix, 
+           cluster_rows = FALSE,   # Set to TRUE if you want to cluster rows
+           cluster_cols = FALSE,   # Set to TRUE if you want to cluster columns
+           color = colorRampPalette(c("white", "black"))(100),
+           main = paste("Preferred Social Charateristic Features of different", column_full_name))
+}
+plot_box_plot = function(data_frame, user_profiles, column_name, column_full_name) {
+  df_list = split_dataframe_by_column(data_frame, user_profiles, column_name)
+  column_names = names(df_list)
+  all_values = c()  # Create a vector to store all data points
+  group_labels = c()  # Create a vector to store group labels
+
+  for (value in column_names) {
+    ahp_value = df_list[[value]] %>%
+      ahp.mat(atts = atts, reciprocal = TRUE)
+
+    eigentrue = ahp.indpref(ahp_value, atts, method = "eigen")
+
+    data_vector <- as.vector(eigentrue)
+    all_values = c(all_values, data_vector)  # Concatenate data vectors
+    group_labels = c(group_labels, rep(value, length(data_vector))) 
+  }
+
+  # Get the number of boxplots to be plotted
+  num_plots <- length(column_names)
+
+  # Create a vector of colors for the boxplots
+  boxplot_colors <- rainbow(num_plots)
+
+  par(mar = c(9, 5, 4, 2) + 0.1)
+  # Create the boxplot with all data points
+  boxplot(all_values,
+          col = rep(boxplot_colors, each = ncol(eigentrue)),
+          at = 1:(num_plots * ncol(eigentrue)),
+          main = paste("Preferred Social Charateristic Features of different", column_full_name),
+          ylab = "Values",
+          # xlab = rep(names(eigentrue), each = num_plots),
+          las = 2)
+
+  # Add group labels to the x-axis 
+  # xis(side = 1, at =  1:(num_plots * ncol(eigentrue)), 
+  #     labels = rep(names(eigentrue), each = num_plots), las = 2)
+
+  # Create the legend
+  par(xpd = TRUE)
+  legend("topright", legend = column_names, fill = boxplot_colors, bty = "n", inset = c(0, 0))
+
+}
+
+```
+
+## AHP on Whether interacted with IBM Chatbot
+
+AHP on Whether interacted with IBM SkillsBuild Chatbot is omitted since all participants answered yes.
+
+## AHP on age
+
+```{r}
+plot_heat_map(df, user_profiles, "age", "age")
+plot_box_plot(df, user_profiles, "age", "age")
+```
+
+## AHP on gender
+
+```{r}
+plot_heat_map(df, user_profiles, "gender", "gender")
+plot_box_plot(df, user_profiles, "gender", "gender")
+```
+
+## AHP on Educational Background
+
+```{r}
+plot_heat_map(df, user_profiles, "edu", "Educational Background")
+plot_box_plot(df, user_profiles, "edu", "Educational Background")
+```
+
+## AHP on Familiarity with emerging technologies
+
+```{r}
+plot_heat_map(df, user_profiles, "fam", "Familiarity with emerging technologies")
+plot_box_plot(df, user_profiles, "fam", "Familiarity with emerging technologies")
+```
+
+## AHP on Frequency of Chatbot Usage
+
+```{r}
+plot_heat_map(df, user_profiles, "freq", "Frequency of using Chatbots")
+plot_box_plot(df, user_profiles, "freq", "Frequency of using Chatbots")
+```
+
+## AHP on Overall satisfaction (IBM Chatbot)
+
+```{r}
+plot_heat_map(df, user_profiles, "sat", "Overall satisfaction (IBM Chatbot)")
+plot_box_plot(df, user_profiles, "sat", "Overall satisfaction (IBM Chatbot)")
+```

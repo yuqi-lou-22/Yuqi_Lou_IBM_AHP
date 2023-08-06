@@ -2,6 +2,11 @@
 
 This repository contains both Python and R implementations of the Analytic Hierarchy Process (AHP) for understanding user preferences of social characteristics features in the IBM SkillsBuild Chatbot.
 
+## Acknowledgement:  
+I acknowledge the use of ChatGPT (https://chat.openai.com/) to facilitate the data transformation process, which I mainly used in [AHP.ipynb]
+### Description of the use of AI:
+I used ChatGPT to [create the initial data transformation code, which I later edit it myself to present a cleaner look.]
+
 ## Background
 The Analytic Hierarchy Process (AHP) is a structured technique for organizing and analyzing complex decisions, based on mathematics and psychology. It was developed by Thomas L. Saaty in the 1970s and has been extensively studied and refined since then.
 

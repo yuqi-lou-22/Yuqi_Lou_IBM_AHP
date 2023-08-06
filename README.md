@@ -29,7 +29,9 @@ As a result, data transformation is conducted in Python.
 
 ## R Implementation
 Due to issues with the Python package, the analysis was successfully carried out using R. Source: https://cran.r-project.org/web/packages/ahpsurvey/vignettes/my-vignette.html 
+
 The R implementation provides:
+
 1. A deliberate AHP analysis of the entire dataset.
 2. Visualization tools like heatmaps and boxplots to understand user preferences across various user profile categories such as age, gender, education background, familiarity with emerging technologies, frequency of chatbot usage, and overall satisfaction with the IBM Chatbot.
 

@@ -43,5 +43,3 @@ The data for this analysis consists of two CSV files:
 ### Previewing R-Markdown file
 **Issues have been encountered during previewing R-Markdown Document, therefore a PDF file is also uploaded to this repository, under the name of "IBM_AHP.pdf"**
 
-## Contributions and Feedback
-This code is produced by Yuqi Lou. 

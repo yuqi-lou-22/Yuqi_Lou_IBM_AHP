@@ -38,8 +38,8 @@ The data for this analysis consists of two CSV files:
 1. extents.csv: Contains the main dataset.
 2. user_profiles.csv: Contains the user profiles.
 
-### Running the Code
-R: To run the R code, you'll need to install the required packages (ahpsurvey, magrittr, and pheatmap). Then, run the provided R script.
+### Previewing R-Markdown file
+**Issues have been encountered during previewing R-Markdown Document, therefore a PDF file is also uploaded to this repository, under the name of "IBM_AHP.pdf"**
 
 ## Contributions and Feedback
 This code is produced by Yuqi Lou. 
